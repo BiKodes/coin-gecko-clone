@@ -23,33 +23,66 @@
         <div class="row">
             <div class="col-8 mx-auto mt-5">
                 <h3 class="mb-5">Cryptocurrencies</h3>  
-                
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">Rank</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for coin in coins %}
-                                <tr>
-                                    <td class="align-middle">{{ coin.market_cap_rank }}</td>
-                                    <td class="align-middle">
-                                        <img src="{{ coin.image }}" alt="" class="px-2" width="50">
-                                            {{ coin.name }}
-                                        <small class="text-muted px-2">{{ coin.symbol }}</small>
-                                    </td>
-                                    <td class="align-middle">{{ coin.current_price }}</td>
-                                </tr>                           
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                
+
+                    {% verbatim  %} 
+                        <div id="app"> 
+                 
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Rank</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                               
+                                        <tr v-for="coin in coins" :key="coin.id">
+                                            <td class="align-middle">{{ coin.rank }}</td>
+                                            <td class="align-middle">
+                                                <img :src="coin.image" alt="" class="px-2" width="50">
+                                                    {{ coin.name }}
+                                                <small class="text-muted px-2">{{ coin.symbol }}</small>
+                                            </td>
+                                            <td class="align-middle"
+                                                :class="{'raise': coin.state === 'raise', 
+                                                'fall': coin.state === 'fall'}"
+                                                >
+                                             {{ coin.price }}
+                                            </td>
+                                        </tr>                           
+                               
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endverbatim  %}  
             </div>
         </div>
     </div>
+    <script>
+        const { createApp } = Vue;
 
+        const CoinsApp = {
+            data() {
+                return {
+                    coin: 'Just a coin',
+                    coins: null
+                }
+            },
+
+            created(){
+                const socket = new WebSocket(`ws://${window.location.host}/ws/coins/`);
+
+                let _this = this;
+
+                socket.onmessage = function(event){
+                    _this.coins = JSON.parse(event.data);
+                    console.log(_this.coins);
+                }
+            }
+        }
+
+createApp(CoinsApp).mount('#app')
+    </script>
 </body>
 </html>

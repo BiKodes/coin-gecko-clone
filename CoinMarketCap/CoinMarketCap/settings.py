@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # custom
-    'coins'
+    'coins',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -61,6 +62,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'CoinMarketCap.wsgi.application'
+ASGI_APPLICATION = 'CoinMarketCap.asgi.application'
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
 
 
 # Database
@@ -73,6 +77,15 @@ DATABASES = {
     }
 }
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)]
+        }
+    }
+    
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
